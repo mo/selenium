@@ -181,6 +181,7 @@ public class JsonHttpCommandHandler {
       command = decode(request);
       ResultConfig config = configs.get(command.getName());
       if (config == null) {
+        log.fine("config was null, will throw UnsupportedCommandException");
         throw new UnsupportedCommandException();
       }
       response = config.handle(command);

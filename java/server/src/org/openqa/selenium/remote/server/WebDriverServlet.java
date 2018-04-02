@@ -243,13 +243,22 @@ public class WebDriverServlet extends HttpServlet {
             req.getMethod(),
             req.getPathInfo(),
             handler.getClass().getSimpleName()));
+        LOG.fine("preparing wrappers");
+        ServletRequestWrappingHttpRequest reqWrap = new ServletRequestWrappingHttpRequest(req);
+        ServletResponseWrappingHttpResponse respWrap = new ServletResponseWrappingHttpResponse(resp);
+        LOG.fine("about to execute");
         handler.execute(
-            new ServletRequestWrappingHttpRequest(req),
-            new ServletResponseWrappingHttpResponse(resp));
+            reqWrap,
+            respWrap);
       } catch (IOException e) {
+        LOG.fine("catching: IOException");
         resp.reset();
         throw new RuntimeException(e);
+      } catch(Exception e) {
+        LOG.fine("catching: " + e);
+        throw e;
       } finally {
+        LOG.fine("finally clause runs");
         Thread.currentThread().setName("Selenium WebDriver Servlet - Quiescent Thread");
         sessionLogHandler.detachFromCurrentThread();
       }

@@ -108,6 +108,7 @@ import org.openqa.selenium.remote.SessionId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * A command codec that adheres to the W3C's WebDriver wire protocol.
@@ -117,6 +118,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractHttpCommandCodec implements CommandCodec<HttpRequest> {
   private static final Splitter PATH_SPLITTER = Splitter.on('/').omitEmptyStrings();
   private static final String SESSION_ID_PARAM = "sessionId";
+  private static final Logger LOG = Logger.getLogger(AbstractHttpCommandCodec.class.getName());
 
   private final ConcurrentHashMap<String, CommandSpec> nameToSpec = new ConcurrentHashMap<>();
   private final Map<String, String> aliases = new HashMap<>();
@@ -215,6 +217,7 @@ public abstract class AbstractHttpCommandCodec implements CommandCodec<HttpReque
     String name = aliases.getOrDefault(command.getName(), command.getName());
     CommandSpec spec = nameToSpec.get(name);
     if (spec == null) {
+      LOG.fine("AbstractHttpCommandCodec.encode throwing UnsupportedCommandException");
       throw new UnsupportedCommandException(command.getName());
     }
     Map<String, ?> parameters = amendParameters(command.getName(), command.getParameters());
@@ -245,6 +248,7 @@ public abstract class AbstractHttpCommandCodec implements CommandCodec<HttpReque
   public Command decode(final HttpRequest encodedCommand) {
     final String path = Strings.isNullOrEmpty(encodedCommand.getUri())
                         ? "/" : encodedCommand.getUri();
+    LOG.fine("path=" + path);
     final ImmutableList<String> parts = ImmutableList.copyOf(PATH_SPLITTER.split(path));
     int minPathLength = Integer.MAX_VALUE;
     CommandSpec spec = null;
@@ -257,6 +261,7 @@ public abstract class AbstractHttpCommandCodec implements CommandCodec<HttpReque
       }
     }
     if (name == null) {
+      LOG.fine("AbstractHttpCommandCodec.decode throwing UnsupportedCommandException");
       throw new UnsupportedCommandException(
           encodedCommand.getMethod() + " " + encodedCommand.getUri());
     }
