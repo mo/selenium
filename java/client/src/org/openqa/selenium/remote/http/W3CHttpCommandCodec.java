@@ -87,6 +87,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -100,8 +101,11 @@ public class W3CHttpCommandCodec extends AbstractHttpCommandCodec {
 
   private final PointerInput mouse = new PointerInput(PointerInput.Kind.MOUSE, "mouse");
   private final KeyInput keyboard = new KeyInput("keyboard");
+  private static final Logger LOG = Logger.getLogger(AbstractHttpCommandCodec.class.getName());
 
   public W3CHttpCommandCodec() {
+    LOG.fine("W3CHttpCommandCodec is being created from:");
+    new Exception().printStackTrace();
     alias(GET_ELEMENT_ATTRIBUTE, EXECUTE_SCRIPT);
     alias(GET_ELEMENT_LOCATION, GET_ELEMENT_RECT);
     alias(GET_ELEMENT_LOCATION_ONCE_SCROLLED_INTO_VIEW, EXECUTE_SCRIPT);

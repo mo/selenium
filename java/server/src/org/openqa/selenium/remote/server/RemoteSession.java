@@ -129,6 +129,8 @@ public abstract class RemoteSession implements ActiveSession {
 
   public abstract static class Factory<X> implements SessionFactory {
 
+    private static final Logger LOG = Logger.getLogger(Factory.class.getName());
+
     protected Optional<ActiveSession> performHandshake(
         X additionalData,
         URL url,
@@ -147,12 +149,14 @@ public abstract class RemoteSession implements ActiveSession {
         SessionCodec codec;
         Dialect upstream = result.getDialect();
         Dialect downstream;
+        LOG.fine("downstreamDialects are set to: " + downstreamDialects);
         if (downstreamDialects.contains(result.getDialect())) {
           codec = new Passthrough(url);
           downstream = upstream;
         } else {
           downstream = downstreamDialects.isEmpty() ? OSS : downstreamDialects.iterator().next();
 
+          LOG.fine("creating ProtocolConverter with downstream==" + downstream + " and upstream==" + upstream);
           codec = new ProtocolConverter(
               url,
               getCommandCodec(downstream),

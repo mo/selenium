@@ -68,12 +68,15 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 public class NewSessionPayload implements Closeable {
+
+  private static final Logger LOG = Logger.getLogger(NewSessionPayload.class.getName());
 
   private final Set<CapabilitiesFilter> adapters;
   private final Set<CapabilityTransform> transforms;
@@ -148,11 +151,19 @@ public class NewSessionPayload implements Closeable {
         .add(new W3CPlatformNameNormaliser());
     this.transforms = transforms.build();
 
+    LOG.fine("about to probe for dialects");
+    CharSource charSource = backingStore.asByteSource().asCharSource(UTF_8);
+    Reader reader = charSource.openBufferedStream();
+    String targetString = CharStreams.toString(reader);
+    LOG.fine("probing dialects in: " + targetString);
+
     ImmutableSet.Builder<Dialect> dialects = ImmutableSet.builder();
     if (getOss() != null) {
+      LOG.fine("adding OSS dialect");
       dialects.add(Dialect.OSS);
     }
     if (getAlwaysMatch() != null || getFirstMatches() != null) {
+      LOG.fine("adding W3C dialect");
       dialects.add(Dialect.W3C);
     }
     this.dialects = dialects.build();

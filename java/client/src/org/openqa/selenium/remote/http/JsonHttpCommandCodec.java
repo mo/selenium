@@ -69,6 +69,7 @@ import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.remote.DriverCommand;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * A command codec that adheres to the Selenium project's JSON/HTTP wire protocol.
@@ -78,7 +79,12 @@ import java.util.Map;
  */
 public class JsonHttpCommandCodec extends AbstractHttpCommandCodec {
 
+  private static final Logger LOG = Logger.getLogger(AbstractHttpCommandCodec.class.getName());
+
   public JsonHttpCommandCodec() {
+    LOG.fine("JsonHttpCommandCodec is being created from:");
+    new Exception().printStackTrace();
+
     defineCommand(GET_ELEMENT_ATTRIBUTE, get("/session/:sessionId/element/:id/attribute/:name"));
     defineCommand(GET_ELEMENT_LOCATION_ONCE_SCROLLED_INTO_VIEW, get("/session/:sessionId/element/:id/location_in_view"));
     defineCommand(IS_ELEMENT_DISPLAYED, get("/session/:sessionId/element/:id/displayed"));
